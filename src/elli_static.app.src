@@ -1,0 +1,13 @@
+{application, elli_static,
+ [
+  {description, "Elli middleware to serve static files."},
+  {vsn, "0.0.1"},
+  {registered, []},
+  {applications, [kernel, stdlib, elli, elli_cache]},
+  {env, []},
+
+  {maintainers,
+   ["Adam Lindberg", "Eric Bailey", "Knut Nesheim", "Tristan Sloughter"]},
+  {licenses, ["MIT"]},
+  {links, [{"GitHub", "https://github.com/elli-lib/elli_static"}]}
+ ]}.

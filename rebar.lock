@@ -1,0 +1,10 @@
+{"1.1.0",
+[{<<"elli_cache">>,{pkg,<<"elli_cache">>,<<"0.1.1">>},0},
+ {<<"erlando">>,{pkg,<<"erlando">>,<<"3.1.1">>},1},
+ {<<"mimerl">>,{pkg,<<"mimerl">>,<<"1.1.0">>},0}]}.
+[
+{pkg_hash,[
+ {<<"elli_cache">>, <<"02D061305F0521961F888B1B23EF4C5CAACBE798E7BF37EDF4B6923D9948A8B9">>},
+ {<<"erlando">>, <<"50E54F9A9DFEC564DDFEB7FC7129F80F491856F5E07686F405CEF4E970BDFE46">>},
+ {<<"mimerl">>, <<"5640F2E988056D5E77BF5C8500D306D15749E29518F342DB02E42DAC5D232486">>}]}
+].

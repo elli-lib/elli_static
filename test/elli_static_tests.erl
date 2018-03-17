@@ -34,12 +34,12 @@ setup() ->
     Args = [{<<"/elli_static">>, {dir, Dir}}],
     Config = [
               {mods, [
-                      {elli_middleware_cache, [{mod, elli_static_cache}]},
+                      {elli_middleware_cache, [{elli_static, Args}]},
                       {elli_static, Args}
                      ]
               }
              ],
-    {ok, Pid} = elli:start_link([{callback, elli_middleware},                                 
+    {ok, Pid} = elli:start_link([{callback, elli_middleware},
                                  {callback_args, Config},
                                  {port, 3000}]),
     unlink(Pid),

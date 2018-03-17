@@ -3,7 +3,7 @@
   {description, "Elli middleware to serve static files."},
   {vsn, "0.0.1"},
   {registered, []},
-  {applications, [kernel, stdlib, elli, elli_cache]},
+  {applications, [kernel, stdlib, elli_cache]},
   {env, []},
 
   {maintainers,

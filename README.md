@@ -27,9 +27,9 @@ rebar3 compile
 
 [travis badge]: https://travis-ci.org/elli-lib/elli_static.svg?branch=develop
 [travis builds]: https://travis-ci.org/elli-lib/elli_static?branch=develop
-[hex badge]: https://img.shields.io/hexpm/v/elli_static.svg?maxAge=2592000?style=plastic
+[hex badge]: https://img.shields.io/hexpm/v/elli_static.svg
 [hex link]: https://hex.pm/packages/elli_static
-[hex downloads]: https://img.shields.io/hexpm/dt/elli_static.svg?maxAge=2592000
+[hex downloads]: https://img.shields.io/hexpm/dt/elli_static.svg
 [coveralls badge]: https://coveralls.io/repos/github/elli-lib/elli_static/badge.svg?branch=develop
 [coveralls link]: https://coveralls.io/github/elli-lib/elli_static?branch=develop
 [erlang badge]: https://img.shields.io/badge/erlang-%E2%89%A518.0-red.svg

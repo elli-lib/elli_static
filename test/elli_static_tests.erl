@@ -9,7 +9,8 @@ elli_static_test_() ->
       ?_test(no_file()),
       ?_test(not_found()),
       ?_test(safe_traversal()),
-      ?_test(unsafe_traversal())]}.
+      ?_test(unsafe_traversal()),
+      ?_test(invalid_path_separator())]}.
 
 
 readme() ->
@@ -31,13 +32,18 @@ not_found() ->
     ?assertMatch({{"HTTP/1.1",404,"Not Found"}, _Headers, "Not Found"}, Response).
 
 safe_traversal() ->
-    {ok, Response} = httpc:request("http://localhost:3000/elli_static/"
-                                   "../elli_static/README.md"),
     {ok, File} = file:read_file("README.md"),
     Expected = binary_to_list(File),
+
+    {ok, Response} = httpc:request("http://localhost:3000/elli_static/"
+                                   "../elli_static/README.md"),
     ?assertEqual([integer_to_list(iolist_size(Expected))],
                  proplists:get_all_values("content-length", element(2, Response))),
-    ?assertMatch({_Status, _Headers, Expected}, Response).
+    ?assertMatch({_Status, _Headers, Expected}, Response),
+
+
+    %% `Response' should match the same request above
+    {ok, Response} = httpc:request("http://localhost:3000/elli_static/./README.md").
 
 unsafe_traversal() ->
     %% compute the relative path to /etc/passwd
@@ -46,6 +52,12 @@ unsafe_traversal() ->
     Path = filename:join(PasswdPath),
 
     {ok, Response} = httpc:request("http://localhost:3000/elli_static/" ++ Path),
+    ?assertMatch({{"HTTP/1.1",404,"Not Found"}, _Headers, "Not Found"}, Response).
+
+invalid_path_separator() ->
+    %% https://www.ietf.org/rfc/rfc2396.txt defines a path separator to be a
+    %% single slash
+    {ok, Response} = httpc:request("http://localhost:3000////elli_static/README.md"),
     ?assertMatch({{"HTTP/1.1",404,"Not Found"}, _Headers, "Not Found"}, Response).
 
 setup() ->

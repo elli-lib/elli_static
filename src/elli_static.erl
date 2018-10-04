@@ -88,7 +88,7 @@ maybe_file(Req, Prefix, Dir) ->
 
     %% santize the path ensuring the request doesn't access any parent
     %% directories ... and reattach the slash if deemed safe
-    SafePath = case filename:safe_relative_path(RawPath) of
+    SafePath = case safe_relative_path(RawPath) of
                    unsafe ->
                        throw(?NOT_FOUND);
                    %% return type quirk work around
@@ -110,3 +110,43 @@ maybe_file(Req, Prefix, Dir) ->
         _ ->
             nothing
     end.
+
+
+%% OTP_RELEASE macro was introduced in 21, `filename:safe_relative_path/1' in
+%% 19.3, so the code below is safe
+-ifdef(OTP_RELEASE).
+  -ifdef(?OTP_RELEASE >= 21).
+safe_relative_path(Path) ->
+    filename:safe_relative_path(Path).
+  -endif.
+-else.
+
+%% @doc Backport of `filename:safe_relative_path/1' from 19.3. This code was
+%% lifted from:
+%% https://github.com/erlang/otp/blob/master/lib/stdlib/src/filename.erl#L811
+-spec safe_relative_path(binary()) -> unsafe | file:name_all().
+safe_relative_path(Path) ->
+    case filename:pathtype(Path) of
+        relative ->
+            Cs0 = filename:split(Path),
+            safe_relative_path_1(Cs0, []);
+        _ ->
+            unsafe
+    end.
+
+safe_relative_path_1([<<".">>|T], Acc) ->
+    safe_relative_path_1(T, Acc);
+safe_relative_path_1([<<"..">>|T], Acc) ->
+    climb(T, Acc);
+safe_relative_path_1([H|T], Acc) ->
+    safe_relative_path_1(T, [H|Acc]);
+safe_relative_path_1([], []) ->
+    [];
+safe_relative_path_1([], Acc) ->
+    filename:join(lists:reverse(Acc)).
+
+climb(_, []) ->
+    unsafe;
+climb(T, [_|Acc]) ->
+    safe_relative_path_1(T, Acc).
+-endif.

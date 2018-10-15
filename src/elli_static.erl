@@ -115,7 +115,8 @@ maybe_file(Req, Prefix, Dir) ->
 safe_relative_path(Path) ->
     %% prefer the stdlib implementation of `safe_relative_path/1' if available
     %% (found in OTP 19.3 or higher)
-    case lists:member(safe_relative_path, filename:module_info(exports)) of
+    case lists:member({safe_relative_path, 1},
+                      filename:module_info(exports)) of
         true ->
             filename:safe_relative_path(Path);
         false ->

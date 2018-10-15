@@ -111,42 +111,13 @@ maybe_file(Req, Prefix, Dir) ->
             nothing
     end.
 
-
-%% OTP_RELEASE macro was introduced in 21, `filename:safe_relative_path/1' in
-%% 19.3, so the code below is safe
--ifdef(OTP_RELEASE).
-  -ifdef(?OTP_RELEASE >= 21).
+-spec safe_relative_path(binary()) -> unsafe | [] | binary().
 safe_relative_path(Path) ->
-    filename:safe_relative_path(Path).
-  -endif.
--else.
-
-%% @doc Backport of `filename:safe_relative_path/1' from 19.3. This code was
-%% lifted from:
-%% https://github.com/erlang/otp/blob/master/lib/stdlib/src/filename.erl#L811
--spec safe_relative_path(binary()) -> unsafe | file:name_all().
-safe_relative_path(Path) ->
-    case filename:pathtype(Path) of
-        relative ->
-            Cs0 = filename:split(Path),
-            safe_relative_path_1(Cs0, []);
-        _ ->
-            unsafe
+    %% prefer the stdlib implementation of `safe_relative_path/1' if available
+    %% (found in OTP 19.3 or higher)
+    case lists:member(safe_relative_path, filename:module_info(exports)) of
+        true ->
+            filename:safe_relative_path(Path);
+        false ->
+            elli_static_utils:safe_relative_path(Path)
     end.
-
-safe_relative_path_1([<<".">>|T], Acc) ->
-    safe_relative_path_1(T, Acc);
-safe_relative_path_1([<<"..">>|T], Acc) ->
-    climb(T, Acc);
-safe_relative_path_1([H|T], Acc) ->
-    safe_relative_path_1(T, [H|Acc]);
-safe_relative_path_1([], []) ->
-    [];
-safe_relative_path_1([], Acc) ->
-    filename:join(lists:reverse(Acc)).
-
-climb(_, []) ->
-    unsafe;
-climb(T, [_|Acc]) ->
-    safe_relative_path_1(T, Acc).
--endif.

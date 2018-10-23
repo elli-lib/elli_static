@@ -9,7 +9,7 @@
 -include_lib("kernel/include/file.hrl").
 
 -define(TABLE, elli_static_table).
-
+-define(NOT_FOUND, {404, [], <<"Not Found">>}).
 
 %% elli_handler callbacks
 -export([handle/2, handle_event/3]).
@@ -81,15 +81,31 @@ file_info(Filename) ->
         {error, Reason} -> throw(Reason)
     end.
 
-
 maybe_file(Req, Prefix, Dir) ->
+    %% all paths start with a slash which `safe_relative_path/1' interprets as
+    %% unsafe (absolute path), so temporarily remove it
+    <<"/", RawPath/binary>> = elli_request:raw_path(Req),
+
+    %% santize the path ensuring the request doesn't access any parent
+    %% directories ... and reattach the slash if deemed safe
+    SafePath = case elli_static_utils:safe_relative_path(RawPath) of
+                   unsafe ->
+                       throw(?NOT_FOUND);
+                   %% return type quirk work around
+                   [] ->
+                       <<"/">>;
+                   Sanitized ->
+                       <<"/", Sanitized/binary>>
+               end,
+
     Size = byte_size(Prefix),
-    case elli_request:raw_path(Req) of
+    case SafePath of
+        %% ensure that `SafePath' starts with the correct prefix
         <<Prefix:Size/binary,"/",Path/binary>> ->
             Filename = filename:join(Dir, Path),
             case filelib:is_regular(Filename) of
                 true  -> {just, Filename};
-                false -> throw({404, [], <<"Not Found">>})
+                false -> throw(?NOT_FOUND)
             end;
         _ ->
             nothing

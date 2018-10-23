@@ -9,6 +9,10 @@
       Filename :: file:name_all(),
       SafeFilename :: file:name_all().
 
+-ifndef(custom_safe_relative_path).
+safe_relative_path(Path) ->
+    filename:safe_relative_path(Path).
+-else.
 safe_relative_path(Path) ->
     case filename:pathtype(Path) of
         relative ->
@@ -37,3 +41,4 @@ climb(_, []) ->
     unsafe;
 climb(T, [_|Acc]) ->
     safe_relative_path_1(T, Acc).
+-endif.

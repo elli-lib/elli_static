@@ -88,7 +88,7 @@ maybe_file(Req, Prefix, Dir) ->
 
     %% santize the path ensuring the request doesn't access any parent
     %% directories ... and reattach the slash if deemed safe
-    SafePath = case safe_relative_path(RawPath) of
+    SafePath = case elli_static_utils:safe_relative_path(RawPath) of
                    unsafe ->
                        throw(?NOT_FOUND);
                    %% return type quirk work around
@@ -109,16 +109,4 @@ maybe_file(Req, Prefix, Dir) ->
             end;
         _ ->
             nothing
-    end.
-
--spec safe_relative_path(binary()) -> unsafe | [] | binary().
-safe_relative_path(Path) ->
-    %% prefer the stdlib implementation of `safe_relative_path/1' if available
-    %% (found in OTP 19.3 or higher)
-    case lists:member({safe_relative_path, 1},
-                      filename:module_info(exports)) of
-        true ->
-            filename:safe_relative_path(Path);
-        false ->
-            elli_static_utils:safe_relative_path(Path)
     end.

@@ -43,5 +43,3 @@ safe_relative_path() ->
     ?assertEqual(unsafe, elli_static_utils:safe_relative_path(<<"a/././../../..">>)),
     ?assertEqual(unsafe, elli_static_utils:safe_relative_path(<<"a/b/././../../..">>)),
     ?assertEqual(unsafe, elli_static_utils:safe_relative_path(<<"/root">>)).
-
-

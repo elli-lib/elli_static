@@ -29,7 +29,12 @@ no_file() ->
 
 not_found() ->
     {ok, Response} = httpc:request("http://localhost:3000/not_found"),
+    ?assertMatch({{"HTTP/1.1",404,"Not Found"}, _Headers, "Not Found"}, Response),
+
+    %% return 404 if the user doesn't provide a path
+    {ok, Response} = httpc:request("http://localhost:3000"),
     ?assertMatch({{"HTTP/1.1",404,"Not Found"}, _Headers, "Not Found"}, Response).
+
 
 safe_traversal() ->
     {ok, File} = file:read_file("README.md"),
@@ -40,7 +45,6 @@ safe_traversal() ->
     ?assertEqual([integer_to_list(iolist_size(Expected))],
                  proplists:get_all_values("content-length", element(2, Response))),
     ?assertMatch({_Status, _Headers, Expected}, Response),
-
 
     %% `Response' should match the same request above
     {ok, Response} = httpc:request("http://localhost:3000/elli_static/./README.md").
